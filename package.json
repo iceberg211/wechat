@@ -1,11 +1,16 @@
 {
-  "name": "wechat",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC"
+    "name": "wechat",
+    "version": "1.0.0",
+    "description": "wechat",
+    "main": "index.js",
+    "scripts": {
+        "start": "node check.js",
+        "ngrok": "./bin/ngrok.sh"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "koa": "^2.5.1",
+        "sha1": "^1.1.1"
+    }
 }
