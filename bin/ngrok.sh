@@ -1,1 +1,3 @@
-./bin/sunny clientid fe206051618c9f7b
+./bin/sunny clientid 151530167103
+
+sunny.exe --clientid=151530167103
