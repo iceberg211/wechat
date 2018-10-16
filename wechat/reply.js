@@ -1,6 +1,6 @@
 
 /*
- *** 回复策略
+ *** 回复策略，略傻
 */
 exports.reply = async (ctx, next) => {
   const message = ctx.wexin;
