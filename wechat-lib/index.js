@@ -1,11 +1,14 @@
 
-const request = require('request-promise')
-const base = 'https://api.weixin.qq.com/sns/';
+const request = require('request-promise');
+const fs = require('fs');
+const base = 'https://api.weixin.qq.com/';
 
 const api = {
-  authorize: 'https://open.weixin.qq.com/connect/oauth2/authorize?',
   accessToken: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential',
-  userInfo: base + 'userinfo?'
+  temporary: {
+    upload: base + 'cgi-bin/media/upload',
+    fetch: base + 'media/get?'
+  },
 }
 
 /**
@@ -44,13 +47,13 @@ class WeChat {
   async fetchAccessToken() {
     // 获取
     let data = await this.getAccessToken();
-    // if (this.getAccessToken) {
-    //   data = await this.getAccessToken();
-    // }
+
     // 如果token不合法
     if (!this.isValidToken(data)) {
       data = await this.updateAccessToken();
     }
+
+    await this.saveAccessToken(data)
     return data;
   }
 
@@ -64,12 +67,10 @@ class WeChat {
     const url = `${api.accessToken}&appid=${this.appID}&secret=${this.appSecret}`
 
     const data = await this.request({ url })
-    console.log('原始data', data)
     const now = new Date().getTime()
     const expiresIn = now + (data.expires_in - 20) * 1000
 
     data.expires_in = expiresIn
-    console.log(data);
 
     return data;
   }
@@ -85,6 +86,48 @@ class WeChat {
     } else {
       return false;
     }
+
+  }
+
+  /**
+   * 上传素材方法
+   * @param {*} token 票据token
+   * @param {*} type  素材类型，永久或者临时
+   * @param {*} material
+   * @param {boolean} [permanent=false]
+   * @memberof WeChat
+   */
+  uploadMaterial(token, type, material, permanent = false) {
+    let form = {}
+
+    // 如果临时
+    if (permanent) {
+
+    }
+
+    form.media = fs.createReadStream(material)
+
+    let uploadUrl = `${api.temporary.upload}access_token=${token}&type=${type}`;
+
+    const options = {
+      method: 'POST',
+      url: uploadUrl,
+      json: true,
+      formData: form,
+    }
+
+    return options;
+  }
+
+  async handle(operation, ...args) {
+
+    const tokenData = await this.getAccessToken();
+
+    const options = this[operation](tokenData.access_token, ...args);
+
+    const data = await this.request(options)
+
+    return data;
 
   }
 }

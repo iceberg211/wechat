@@ -1,23 +1,26 @@
 {
-  "name": "wechat",
-  "version": "1.0.0",
-  "description": "wechat",
-  "main": "index.js",
-  "scripts": {
-    "start": "node app.js",
-    "ngrok": "node ./bin/ngrok.sh"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "ejs": "^2.6.1",
-    "glob": "^7.1.3",
-    "koa": "^2.5.1",
-    "mongoose": "^5.3.3",
-    "raw-body": "^2.3.3",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.2",
-    "sha1": "^1.1.1",
-    "xml2js": "^0.4.19"
-  }
+    "name": "wechat",
+    "version": "1.0.0",
+    "description": "wechat",
+    "main": "index.js",
+    "scripts": {
+        "start": "nodemon app.js",
+        "ngrok": "node ./bin/ngrok.sh"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "ejs": "^2.6.1",
+        "glob": "^7.1.3",
+        "koa": "^2.5.1",
+        "mongoose": "^5.3.3",
+        "raw-body": "^2.3.3",
+        "request": "^2.88.0",
+        "request-promise": "^4.2.2",
+        "sha1": "^1.1.1",
+        "xml2js": "^0.4.19"
+    },
+    "devDependencies": {
+        "nodemon": "^1.18.4"
+    }
 }

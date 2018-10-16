@@ -21,11 +21,6 @@ const wechatCfg = {
   }
 }
 
-exports.test = async () => {
-  const client = new Wechat(wechatCfg.wechat);
 
-  const data = await client.fetchAccessToken();
-
-  console.log(data);
-
-}
+exports.getWechat = () => new Wechat(wechatCfg.wechat)
+// exports.getOAuth = () => new WechatOAuth(wechatCfg.wechat)

@@ -10,9 +10,6 @@ const { initSchemas, connect } = require('./app/database/init');
 
   initSchemas();
 
-  const { test } = require('./wechat/index');
-
-  await test();
 
   const app = new Koa();
 

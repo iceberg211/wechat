@@ -21,6 +21,7 @@ const TokenSchema = new Schema({
   }
 })
 
+// 钩子函数中间件
 TokenSchema.pre('save', function (next) {
   // 如果新增
   if (this.isNew) {
@@ -32,6 +33,7 @@ TokenSchema.pre('save', function (next) {
   next()
 })
 
+// 定义在类模型上的静态方法，不能被实例化
 TokenSchema.statics = {
   async getAccessToken() {
     const token = await this.findOne({
@@ -53,6 +55,7 @@ TokenSchema.statics = {
       token.token = data.access_token
       token.expires_in = data.expires_in
     } else {
+      // 创建一条数据
       token = new Token({
         name: 'access_token',
         token: data.access_token,

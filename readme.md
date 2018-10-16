@@ -8,4 +8,21 @@
 
 ## token
 
-  
+
+## MongoDb vs MySql
+
+datBase            dataBase                dataBase  
+
+collection         Table                    schema
+
+document           row                      modal
+
+filed              column                   entity
+
+index               index                   methods()
+
+primary key      primary key                statice（模型调用）
+
+
+无关联             table join                
+
