@@ -30,13 +30,11 @@ module.exports = (config, reply) => {
       })
       // 解析XMl
       const content = await util.parseXML(data)
-      console.log('content')
-      console.log(content)
+
       // 数据扁平化
       const message = util.formatMessage(content.xml)
-      console.log('message')
-      console.log(message)
 
+      // 将接受的信息挂在ctx上下文上
       ctx.wexin = message;
 
       // 使用appley让reply拥有ctx的上下文

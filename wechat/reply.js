@@ -1,12 +1,12 @@
 const { resolve } = require('path');
 
 /*
- *** 回复策略，略傻
-*/
+ * 回复策略，略傻瓜化
+ */
 exports.reply = async (ctx, next) => {
 
   // 通过文件引用，拿到实例，每一个请求都需要reply，必须
-  let mp = require('../wechat');
+  let mp = require('./index');
 
   let client = mp.getWechat();
 
@@ -22,7 +22,31 @@ exports.reply = async (ctx, next) => {
     } else if (content === '3') {
       reply = '星球大战3'
     } else if (content === '4') {
-      let data = client.handle('uploadMaterial', 'image', resolve(__dirname, '../2.jpg'));
+      let data = await client.handle('uploadMaterial', 'image', resolve(__dirname, '../2.jpg'));
+      reply = {
+        type: 'image',
+        mediaId: data.media_id
+      }
+    } else if (content === '5') {
+      let data = await client.handle('uploadMaterial', 'video', resolve(__dirname, '../6.mp4'));
+      reply = {
+        type: 'video',
+        title: '回复的视频标题',
+        description: '测试视频',
+        mediaId: data.media_id
+      }
+      // 永久视频上传
+    } else if (content === '6') {
+      let data = await client.handle('uploadMaterial', 'video', resolve(__dirname, '../6.mp4'), {
+        type: 'video',
+        description: '{"title": "这个地方很棒", "introduction": "永久视频上传"}'
+      });
+      reply = {
+        type: 'video',
+        title: '永久视频上传 2',
+        description: '永久视频上传',
+        mediaId: data.media_id
+      }
     }
     ctx.body = reply;
   }

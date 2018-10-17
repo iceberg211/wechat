@@ -6,9 +6,14 @@ const base = 'https://api.weixin.qq.com/';
 const api = {
   accessToken: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential',
   temporary: {
-    upload: base + 'cgi-bin/media/upload',
-    fetch: base + 'media/get?'
+    upload: base + 'cgi-bin/media/upload?',
+    fetch: base + 'media/get?',
   },
+  permanent: {
+    upload: base + '/cgi-bin/material/add_material?',
+    uploadNew: base + '/cgi-bin/material/add_news?',
+    uploadNewsPic: base + '/cgi-bin/media/uploadimg?',
+  }
 }
 
 /**
@@ -100,21 +105,50 @@ class WeChat {
   uploadMaterial(token, type, material, permanent = false) {
     let form = {}
 
-    // 如果临时
-    if (permanent) {
+    let url = api.temporary.upload;
+    // 如果是永久素材,继承外面传入的新对象
 
+    if (permanent) {
+      url = api.permanent.upload;
+      form = Object.assign(form, permanent)
+    }
+    // 上传图文消息的图片素材
+    if (type === 'pic') {
+      url = api.permanent.uploadNewsPic
     }
 
+    // 图文非图文的素材提交表单的切换
+    if (type === 'news') {
+      url = api.permanent.uploadNews
+      form = material
+    } else {
+      form.media = fs.createReadStream(material)
+    }
     form.media = fs.createReadStream(material)
 
-    let uploadUrl = `${api.temporary.upload}access_token=${token}&type=${type}`;
+    let uploadUrl = `${url}access_token=${token}`;
 
+    // 根据素材永久性填充token
+    if (!permanent) {
+      uploadUrl += `&type=${type}`
+    } else {
+      if (type !== 'news') {
+        form.access_token = token
+      }
+    }
     const options = {
       method: 'POST',
       url: uploadUrl,
-      json: true,
-      formData: form,
+      json: true
     }
+
+    // 图文和非图文在 request 提交主体判断
+    if (type === 'news') {
+      options.body = form
+    } else {
+      options.formData = form
+    }
+
 
     return options;
   }

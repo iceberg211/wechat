@@ -10,7 +10,9 @@
         "js": "node --harmony"
     },
     "watch": [
-        "app/"
+        "app/",
+        "wechat/",
+        "wechat-lib"
     ],
     "ext": "js json"
 }

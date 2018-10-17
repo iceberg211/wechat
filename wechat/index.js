@@ -11,12 +11,12 @@ const wechatCfg = {
     getAccessToken: async () => {
       const res = await Token.getAccessToken()
 
-      return res
+      return res;
     },
     saveAccessToken: async (data) => {
       const res = await Token.saveAccessToken(data)
 
-      return res
+      return res;
     },
   }
 }

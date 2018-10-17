@@ -18,13 +18,12 @@ exports.connect = (db) => {
   }
   let maxConnectTimes = 0;
   return new Promise(function (resolve, reject) {
-    mongoose.connect(db);
+
+    mongoose.connect(db, { useNewUrlParser: true });
     mongoose.connection.on('disconnect', () => {
-
       maxConnectTimes++;
-
       if (maxConnectTimes < 5) {
-        mongoose.connect(db);
+        mongoose.connect(db, { useNewUrlParser: true });
       } else {
         reject();
         throw new Error('数据库挂了')
@@ -32,9 +31,8 @@ exports.connect = (db) => {
     })
     mongoose.connection.on('error', err => {
       maxConnectTimes++;
-
       if (maxConnectTimes < 5) {
-        mongoose.connect(db);
+        mongoose.connect(db, { useNewUrlParser: true });
       } else {
         reject();
         throw new Error('数据库挂了')
