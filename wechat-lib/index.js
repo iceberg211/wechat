@@ -10,9 +10,9 @@ const api = {
     fetch: base + 'media/get?',
   },
   permanent: {
-    upload: base + '/cgi-bin/material/add_material?',
-    uploadNew: base + '/cgi-bin/material/add_news?',
-    uploadNewsPic: base + '/cgi-bin/media/uploadimg?',
+    upload: base + 'cgi-bin/material/add_material?',
+    uploadNew: base + 'cgi-bin/material/add_news?',
+    uploadNewsPic: base + 'cgi-bin/media/uploadimg?',
   }
 }
 
