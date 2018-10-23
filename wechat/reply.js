@@ -39,12 +39,22 @@ exports.reply = async (ctx, next) => {
     } else if (content === '6') {
       let data = await client.handle('uploadMaterial', 'video', resolve(__dirname, '../6.mp4'), {
         type: 'video',
-        description: '{"title": "这个地方很棒", "introduction": "永久视频上传"}'
+        description: '{"title": "永久视频上传", "introduction": "永久视频上传"}'
       });
+
       reply = {
         type: 'video',
         title: '永久视频上传 2',
         description: '永久视频上传',
+        mediaId: data.media_id
+      }
+    } else if (content === '7') {
+      let data = await client.handle('uploadMaterial', 'image', resolve(__dirname, '../2.jpg'), {
+        type: 'image'
+      });
+      console.log(data);
+      reply = {
+        type: 'image',
         mediaId: data.media_id
       }
     }

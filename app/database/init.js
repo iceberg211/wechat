@@ -13,9 +13,9 @@ exports.initSchemas = () => {
 
 exports.connect = (db) => {
   // 开启调试模式
-  if (process.env.NODE_ENV !== 'production') {
-    mongoose.set('debug', true)
-  }
+  // if (process.env.NODE_ENV !== 'production') {
+  //   mongoose.set('debug', true)
+  // }
   let maxConnectTimes = 0;
   return new Promise(function (resolve, reject) {
 

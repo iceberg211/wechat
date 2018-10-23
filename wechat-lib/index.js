@@ -97,17 +97,17 @@ class WeChat {
   /**
    * 上传素材方法
    * @param {*} token 票据token
-   * @param {*} type  素材类型，永久或者临时
-   * @param {*} material
-   * @param {boolean} [permanent=false]
+   * @param {*} type  素材类型，
+   * @param {*} material 文件类型
+   * @param {boolean} [permanent=false] 永久或者临时
    * @memberof WeChat
    */
   uploadMaterial(token, type, material, permanent = false) {
     let form = {}
 
     let url = api.temporary.upload;
-    // 如果是永久素材,继承外面传入的新对象
 
+    // 如果是永久素材,继承外面传入的新对象
     if (permanent) {
       url = api.permanent.upload;
       form = Object.assign(form, permanent)
@@ -124,7 +124,7 @@ class WeChat {
     } else {
       form.media = fs.createReadStream(material)
     }
-    form.media = fs.createReadStream(material)
+    // form.media = fs.createReadStream(material)
 
     let uploadUrl = `${url}access_token=${token}`;
 
@@ -144,6 +144,7 @@ class WeChat {
 
     // 图文和非图文在 request 提交主体判断
     if (type === 'news') {
+      // 图文消息
       options.body = form
     } else {
       options.formData = form
