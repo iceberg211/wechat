@@ -1,24 +1,35 @@
 
 const request = require('request-promise');
 const fs = require('fs');
-const base = 'https://api.weixin.qq.com/';
+const base = 'https://api.weixin.qq.com/cgi-bin/';
 
 const api = {
   accessToken: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential',
   temporary: {
-    upload: base + 'cgi-bin/media/upload?',
+    upload: base + 'media/upload?',
     fetch: base + 'media/get?',
   },
   permanent: {
-    upload: base + 'cgi-bin/material/add_material?',
-    uploadNew: base + 'cgi-bin/material/add_news?',
-    uploadNewsPic: base + 'cgi-bin/media/uploadimg?',
-    fetch: base + 'cgi-bin/material/get_material?',
-    batch: base + 'cgi-bin/material/batchget_material?',
-    count: base + 'cgi-bin/material/get_materialcount?',
-    deletal: base + 'cgi-bin/material/del_material?',
-    updateNews: base + 'cgi-bin/material/update_news?',
-  }
+    upload: base + 'material/add_material?',
+    uploadNew: base + 'material/add_news?',
+    uploadNewsPic: base + 'media/uploadimg?',
+    fetch: base + 'material/get_material?',
+    batch: base + 'material/batchget_material?',
+    count: base + 'material/get_materialcount?',
+    deletal: base + 'material/del_material?',
+    updateNews: base + 'material/update_news?',
+  },
+
+  tag: {
+    create: base + 'tags/create?',
+    fetch: base + 'tags/get?',
+    update: base + 'tags/update?',
+    del: base + 'tags/delete?',
+    fetchUsers: base + 'user/tag/get?',
+    batchTag: base + 'tags/members/batchtagging?',
+    batchUnTag: base + 'tags/members/batchuntagging?',
+    getUserTags: base + 'tags/getidlist?'
+  },
 }
 
 /**
@@ -243,6 +254,76 @@ class WeChat {
 
     return { method: 'POST', url, body: options }
   }
+
+  createTag(token, name) {
+    const url = `${api.tag.create}access_token=${token}`;
+    const form = {
+      tag: {
+        name,
+      }
+    }
+    return { method: 'POST', url, body: form }
+  }
+
+  fetchTag(token) {
+    const url = `${api.tag.fetch}access_token=${token}`;
+    return { url };
+  }
+
+  updateTag(token, id, name) {
+    const url = `${api.tag.update}access_token=${token}`;
+    const form = {
+      tag: {
+        id,
+        name,
+      }
+    }
+    return { method: 'POST', url, body: form }
+  }
+
+  delTag(token, id) {
+    const url = `${api.tag.del}access_token=${token}`;
+    const form = {
+      tag: {
+        id,
+      }
+    }
+    return { method: 'POST', url, body: form }
+  }
+
+  fetchTagUsers(token, tagid, openId) {
+    const url = `${api.tag.fetchUsers}access_token=${token}`;
+    const body = {
+      tagid,
+      next_openid: openId
+    }
+    return { method: 'POST', url, body }
+  }
+
+
+  /**
+   *
+   * 批量添加标签
+   * @param {*} token
+   * @param {*} openidList
+   * @param {*} tagid
+   * @param {*} unTag
+   * @returns
+   * @memberof WeChat
+   */
+  batchTag(token, openidList, tagid, unTag) {
+    const body = {
+      openid_list: openidList,
+      tagid,
+    }
+    let url = !unTag ? api.tag.batchTag : api.tag.batchUnTag
+    url += 'access_token=' + token
+
+    return { method: 'POST', url, body }
+  }
+
+
+
 }
 
 module.exports = WeChat;

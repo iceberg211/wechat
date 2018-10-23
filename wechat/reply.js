@@ -154,7 +154,12 @@ exports.reply = async (ctx, next) => {
         voice: ${res[2].total_count}
         news: ${res[3].total_count}
       `
+    } else if (content === '获取标签') {
+      let tags = await client.handle('fetchTag');
+
+      reply = tags.tags.length;
     }
+
     ctx.body = reply;
   }
   await next();
