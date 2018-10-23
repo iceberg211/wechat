@@ -58,10 +58,10 @@ exports.reply = async (ctx, next) => {
       }
       // 图文消息
     } else if (content === '8') {
-      const data = await client.handle('uploadMaterial', 'image', resolve(__dirname, '../2.jpg'), {
+      let data = await client.handle('uploadMaterial', 'image', resolve(__dirname, '../2.jpg'), {
         type: 'image'
       })
-      const data2 = await client.handle('uploadMaterial', 'pic', resolve(__dirname, '../2.jpg'), {
+      let data2 = await client.handle('uploadMaterial', 'pic', resolve(__dirname, '../2.jpg'), {
         type: 'image'
       })
       const media = {
@@ -84,8 +84,39 @@ exports.reply = async (ctx, next) => {
         }]
       }
 
-      const uploadData = await client.handle('uploadMaterial', 'news', media, {})
-      reply = '上传成功';
+      // 先上传
+      let uploadData = await client.handle('uploadMaterial', 'news', media, {})
+      let newMedia = {
+        media_id: uploadData.media_id,
+        index: 0,
+        articles: {
+          title: '这是服务端上传的图文 1',
+          thumb_media_id: data.media_id,
+          author: 'Scott',
+          digest: '没有摘要',
+          show_cover_pic: 1,
+          content: '点击去往慕课网',
+          content_source_url: 'http://coding.imooc.com/'
+        }
+      }
+
+      let mediaData = await client.handle('updateMaterial', uploadData.media_id, newMedia)
+
+
+      let newsData = await client.handle('fetchMaterial', uploadData.media_id, 'news', true);
+      let items = newsData.news_item
+      let news = []
+
+      items.forEach(item => {
+        news.push({
+          title: item.title,
+          description: item.description,
+          picUrl: data2.url,
+          url: item.url
+        })
+      })
+
+      reply = news;
 
       // 总数查询
     } else if (content === '9') {

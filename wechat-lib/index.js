@@ -16,8 +16,8 @@ const api = {
     fetch: base + 'cgi-bin/material/get_material?',
     batch: base + 'cgi-bin/material/batchget_material?',
     count: base + 'cgi-bin/material/get_materialcount?',
-    deletal: base + 'cgi-bin/material/del_material',
-    updateNews: base + 'cgi-bin/material/update_news',
+    deletal: base + 'cgi-bin/material/del_material?',
+    updateNews: base + 'cgi-bin/material/update_news?',
   }
 }
 
@@ -124,12 +124,11 @@ class WeChat {
 
     // 图文非图文的素材提交表单的切换
     if (type === 'news') {
-      url = api.permanent.uploadNews
+      url = api.permanent.uploadNew
       form = material
     } else {
       form.media = fs.createReadStream(material)
     }
-    // form.media = fs.createReadStream(material)
 
     let uploadUrl = `${url}access_token=${token}`;
 
@@ -181,13 +180,12 @@ class WeChat {
    * @memberof WeChat  获取 资源的方法
    */
   fetchMaterial(token, mediaId, type, permanent) {
-    let form = {};
+    let form = {}
+    let fetchUrl = api.temporary.fetch
 
-    let url = api.temporary.fetch;
     if (permanent) {
-      url = api.permanent.fetch;
+      fetchUrl = api.permanent.fetch
     }
-
     let url = fetchUrl + 'access_token=' + token
     let options = { method: 'POST', url }
 
