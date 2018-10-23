@@ -13,6 +13,11 @@ const api = {
     upload: base + 'cgi-bin/material/add_material?',
     uploadNew: base + 'cgi-bin/material/add_news?',
     uploadNewsPic: base + 'cgi-bin/media/uploadimg?',
+    fetch: base + 'cgi-bin/material/get_material?',
+    batch: base + 'cgi-bin/material/batchget_material?',
+    count: base + 'cgi-bin/material/get_materialcount?',
+    deletal: base + 'cgi-bin/material/del_material',
+    updateNews: base + 'cgi-bin/material/update_news',
   }
 }
 
@@ -164,6 +169,81 @@ class WeChat {
 
     return data;
 
+  }
+
+
+  /**
+   * @param {*} token  请求token
+   * @param {*} mediaId  资源id
+   * @param {*} type   类型
+   * @param {*} permanent  扩展资源
+   * @returns   options
+   * @memberof WeChat  获取 资源的方法
+   */
+  fetchMaterial(token, mediaId, type, permanent) {
+    let form = {};
+
+    let url = api.temporary.fetch;
+    if (permanent) {
+      url = api.permanent.fetch;
+    }
+
+    let url = fetchUrl + 'access_token=' + token
+    let options = { method: 'POST', url }
+
+    if (permanent) {
+      form.media_id = mediaId
+      form.access_token = token
+      options.body = form
+    } else {
+      if (type === 'video') {
+        url = url.replace('https:', 'http:')
+      }
+
+      url += '&media_id=' + mediaId
+    }
+
+    return options
+
+  }
+  // 删除素材
+  deleteMaterial(token, mediaId) {
+    const form = {
+      media_id: mediaId
+    }
+    const url = `${api.permanent.deletal}access_token=${token}&media_id=${mediaId}`
+
+    return { method: 'POST', url, body: form }
+  }
+
+  // 更新素材
+  updateMaterial(token, mediaId, news) {
+    let form = {
+      media_id: mediaId
+    }
+    form = Object.assign(form, news)
+
+    const url = `${api.permanent.updateNews}access_token=${token}&media_id=${mediaId}`
+
+    return { method: 'POST', url, body: form }
+  }
+
+  // 获取素材总数
+  countMaterial(token) {
+    const url = `${api.permanent.count}access_token=${token}`
+
+    return { method: 'POST', url }
+  }
+
+  // 获取素材列表
+  batchMaterial(token, options) {
+    options.type = options.type || 'image'
+    options.offset = options.offset || 0
+    options.count = options.count || 10
+
+    const url = `${api.permanent.batch}access_token=${token}`
+
+    return { method: 'POST', url, body: options }
   }
 }
 

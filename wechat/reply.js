@@ -52,11 +52,77 @@ exports.reply = async (ctx, next) => {
       let data = await client.handle('uploadMaterial', 'image', resolve(__dirname, '../2.jpg'), {
         type: 'image'
       });
-      console.log(data);
       reply = {
         type: 'image',
         mediaId: data.media_id
       }
+      // 图文消息
+    } else if (content === '8') {
+      const data = await client.handle('uploadMaterial', 'image', resolve(__dirname, '../2.jpg'), {
+        type: 'image'
+      })
+      const data2 = await client.handle('uploadMaterial', 'pic', resolve(__dirname, '../2.jpg'), {
+        type: 'image'
+      })
+      const media = {
+        articles: [{
+          title: '这是图文标题',
+          thumb_media_id: data.media_id,
+          author: '何炜',
+          digest: '这是图文宅摘要',
+          show_cover_pic: 1,
+          content: '点击前往易订货',
+          content_source_url: 'www.dinghuo123.com'
+        }, {
+          title: 'github',
+          thumb_media_id: data2.media_id,
+          author: '何炜',
+          digest: '这是图文宅摘要',
+          show_cover_pic: 1,
+          content: 'github',
+          content_source_url: 'www.github.com'
+        }]
+      }
+
+      const uploadData = await client.handle('uploadMaterial', 'news', media, {})
+      reply = '上传成功';
+
+      // 总数查询
+    } else if (content === '9') {
+
+      // 查共总的数量
+      let count = await client.handle('countMaterial');
+
+      let res = await Promise.all([
+        client.handle('batchMaterial', {
+          type: 'image',
+          offset: 0,
+          count: 10
+        }),
+        client.handle('batchMaterial', {
+          type: 'video',
+          offset: 0,
+          count: 10
+        }),
+        client.handle('batchMaterial', {
+          type: 'voice',
+          offset: 0,
+          count: 10
+        }),
+        client.handle('batchMaterial', {
+          type: 'news',
+          offset: 0,
+          count: 10
+        })
+      ])
+
+      console.log(res)
+      reply = `
+        image: ${res[0].total_count}
+        video: ${res[1].total_count}
+        voice: ${res[2].total_count}
+        news: ${res[3].total_count}
+      `
     }
     ctx.body = reply;
   }
