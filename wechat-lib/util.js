@@ -43,7 +43,7 @@ const formatMessage = result => {
     for (let i = 0; i < keys.length; i++) {
       let item = result[keys[i]]
       let key = keys[i]
-
+      // 如果不是数组
       if (!(item instanceof Array) || item.length === 0) {
         continue
       }
@@ -52,6 +52,7 @@ const formatMessage = result => {
         let val = item[0]
 
         if (typeof val === 'object') {
+          // 递归调用
           message[key] = formatMessage(val)
         } else {
           message[key] = (val || '').trim()

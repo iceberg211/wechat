@@ -270,6 +270,13 @@ class WeChat {
     return { url };
   }
 
+  /**
+   * @param {*} token
+   * @param {*} id
+   * @param {*} name
+   * @returns
+   * @memberof WeChat  升级标签
+   */
   updateTag(token, id, name) {
     const url = `${api.tag.update}access_token=${token}`;
     const form = {
@@ -281,6 +288,13 @@ class WeChat {
     return { method: 'POST', url, body: form }
   }
 
+  /**
+ * @param {*} token
+ * @param {*} id
+ * @param {*} name
+ * @returns
+ * @memberof WeChat  删除标签
+ */
   delTag(token, id) {
     const url = `${api.tag.del}access_token=${token}`;
     const form = {
