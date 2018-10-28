@@ -155,12 +155,49 @@ exports.reply = async (ctx, next) => {
         news: ${res[3].total_count}
       `
     } else if (content === '获取标签') {
+      //  参数个数
       let tags = await client.handle('fetchTag');
 
-      reply = tags.tags.length;
-    }
 
+      reply = tags.tags.length;
+    } else if (content === '10') {
+
+      let userList = await client.handle('fetchUserLists', '');
+
+      console.log(userList);
+
+      reply = `${userList.total}个关注者`;
+
+    } else if (content === '12') {
+
+      const remark = await client.handle('remark', message.FromUserName, '何炜');
+
+      reply = `改名成功`;
+    }
+    else if (content === '用户信息') {
+
+      const userInfor = await client.handle('userInfor', message.FromUserName);
+
+      reply = JSON.stringify(userInfor);
+    }
+    else if (content === '批量获取用户信息') {
+
+      const userInfor = await client.handle('userInfor', message.FromUserName);
+
+      reply = JSON.stringify(userInfor);
+    }
+    ctx.body = reply;
+    await next();
+    // 获取地理位置，地理位置为事件类型
+  } else if (message.MsgType === 'event') {
+    let reply = ''
+    if (message.EVENT === 'LOCATION') {
+      reply = `您上报的位置是:${message.Latitude}-${message.Longitude}-${message.Precision}`
+
+    }
     ctx.body = reply;
   }
-  await next();
 }
+
+
+

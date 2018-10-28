@@ -30,6 +30,13 @@ const api = {
     batchUnTag: base + 'tags/members/batchuntagging?',
     getUserTags: base + 'tags/getidlist?'
   },
+
+  user: {
+    fetch: base + 'user/get?',
+    remark: base + 'user/info/updateremark?',
+    infor: base + 'user/info?',
+    batch: base + 'user/info/batchget?'
+  }
 }
 
 /**
@@ -171,6 +178,7 @@ class WeChat {
 
   async handle(operation, ...args) {
 
+    // 取得参数
     const tokenData = await this.getAccessToken();
 
     const options = this[operation](tokenData.access_token, ...args);
@@ -336,6 +344,26 @@ class WeChat {
     return { method: 'POST', url, body }
   }
 
+  // 获取粉丝列表
+  fetchUserLists(token, openId) {
+    // `${api.user.fetch}access_token=${token}&secret=${this.appSecret}`
+    const url = `${api.user.fetch}access_token=${token}&next_openid=${openId}`;
+    return { url }
+  }
+
+  // 给用户设置别名
+  remark(token, openId, remark) {
+    const url = `${api.user.remark}access_token=${token}`;
+    const body = {
+      openId,
+      remark,
+    }
+    return { method: 'POST', url, body };
+  }
+  userInfor(token, openId, lang = "zh_CN") {
+    const url = `${api.user.infor}access_token=${token}&openid=${openId}`;
+    return { url }
+  }
 
 
 }
