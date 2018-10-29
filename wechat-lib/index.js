@@ -2,6 +2,7 @@
 const request = require('request-promise');
 const fs = require('fs');
 const base = 'https://api.weixin.qq.com/cgi-bin/';
+const mpBase = 'https://mp.weixin.qq.com/cgi-bin/';
 
 const api = {
   accessToken: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential',
@@ -36,7 +37,15 @@ const api = {
     remark: base + 'user/info/updateremark?',
     infor: base + 'user/info?',
     batch: base + 'user/info/batchget?'
-  }
+  },
+  qrcode: {
+    create: base + 'qrcode/create?',
+    show: mpBase + 'showqrcode?',
+  },
+
+  shortUrl:{
+
+  },
 }
 
 /**
@@ -365,6 +374,17 @@ class WeChat {
     return { url }
   }
 
+  // 创建二维码 Tikcker
+  createQrcode(token, qr) {
+    const url = `${api.qrcode.create}access_token=${token}`;
+    const body = qr;
+    return { method: 'POST', url, body };
+  }
+  // 通过Tikcker
+  showQrcode(ticket) {
+    const url = `${api.qrcode.show}ticket=${encodeURI(ticket)}`;
+    return url;
+  }
 
 }
 

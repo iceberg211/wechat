@@ -186,6 +186,21 @@ exports.reply = async (ctx, next) => {
 
       reply = JSON.stringify(userInfor);
     }
+    else if (content === '二维码') {
+      // expire_seconds 去掉 expire_seconds就是永久二维码
+      let temQr = {
+        expire_seconds: 604800,
+        action_name: "QR_SCENE",
+        action_info:
+          { scene: { scene_id: 123 } }
+      }
+      // 拿到二维码
+      const temcode = await client.handle('createQrcode', temQr);
+
+      // 生成二维码
+      const temQrcode = client.showQrcode(temcode.ticket);
+      reply = temQrcode;
+    }
     ctx.body = reply;
     await next();
     // 获取地理位置，地理位置为事件类型
