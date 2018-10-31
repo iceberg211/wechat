@@ -200,18 +200,191 @@ exports.reply = async (ctx, next) => {
       // 生成二维码
       const temQrcode = client.showQrcode(temcode.ticket);
       reply = temQrcode;
+    } else if (content === '16') {
+      let longurl = 'https://coding.imooc.com/class/178.html?a=1'
+      let shortData = await client.handle('createShortUrl', 'long2short', longurl)
+
+      console.log(shortData)
+
+      reply = shortData.short_url
+    } else if (content === '17') {
+      let semanticData = {
+        query: '查一下明天从杭州到北京的南航机票',
+        city: '杭州',
+        category: 'flight,hotel',
+        uid: message.FromUserName
+      }
+      let searchData = await client.handle('semantic', semanticData)
+
+      console.log(searchData)
+
+      reply = JSON.stringify(searchData)
+    } else if (content === '18') {
+      let body = '编程语言难学么'
+      let aiData = await client.handle('aiTranslate', body, 'zh_CN', 'en_US')
+
+      console.log(aiData)
+
+      reply = JSON.stringify(aiData)
+    } else if (content === '19') {
+      try {
+        let delData = await client.handle('deleteMenu')
+        console.log(delData)
+        let menu = {
+          button: [
+            {
+              name: '一级菜单',
+              sub_button: [
+                {
+                  name: '二级菜单 1',
+                  type: 'click',
+                  key: 'no_1'
+                }, {
+                  name: '二级菜单 2',
+                  type: 'click',
+                  key: 'no_2'
+                }, {
+                  name: '二级菜单 3',
+                  type: 'click',
+                  key: 'no_3'
+                }, {
+                  name: '二级菜单 4',
+                  type: 'click',
+                  key: 'no_4'
+                }, {
+                  name: '二级菜单 5',
+                  type: 'click',
+                  key: 'no_5'
+                }
+              ]
+            },
+            {
+              name: '分类',
+              type: 'view',
+              url: 'https://www.imooc.com'
+            },
+            {
+              name: '新菜单_' + Math.random(),
+              type: 'click',
+              key: 'new_111'
+            }
+          ]
+        }
+        let createData = await client.handle('createMenu', menu)
+        console.log(createData)
+      } catch (e) {
+        console.log(e)
+      }
+
+      reply = '菜单创建成功，请等 5 分钟，或者先取消关注，再重新关注就可以看到新菜单'
+    } else if (content === '20') {
+      try {
+        // let delData = await client.handle('deleteMenu')
+        let menu = {
+          button: [
+            {
+              name: 'Scan_Photo',
+              sub_button: [
+                {
+                  name: '系统拍照',
+                  type: 'pic_sysphoto',
+                  key: 'no_1'
+                }, {
+                  name: '拍照或者发图',
+                  type: 'pic_photo_or_album',
+                  key: 'no_2'
+                }, {
+                  name: '微信相册发布',
+                  type: 'pic_weixin',
+                  key: 'no_3'
+                }, {
+                  name: '扫码',
+                  type: 'scancode_push',
+                  key: 'no_4'
+                }, {
+                  name: '等待中扫码',
+                  type: 'scancode_waitmsg',
+                  key: 'no_5'
+                }
+              ]
+            },
+            {
+              name: '跳新链接',
+              type: 'view',
+              url: 'https://www.imooc.com'
+            },
+            {
+              name: '其他',
+              sub_button: [
+                {
+                  name: '点击',
+                  type: 'click',
+                  key: 'no_11'
+                }, {
+                  name: '地理位置',
+                  type: 'location_select',
+                  key: 'no_12'
+                }
+              ]
+            }
+          ]
+        }
+        let rules = {
+          // "tag_id": "2",
+          // "sex": "1",
+          // "country": "中国",
+          // "province": "广东",
+          // "city": "广州",
+          // "client_platform_type": "2",
+          language: 'en'
+        }
+        await client.handle('createMenu', menu, rules)
+      } catch (e) {
+        console.log(e)
+      }
+
+      let menus = await client.handle('fetchMenu')
+
+      console.log(JSON.stringify(menus))
+
+      reply = '菜单创建成功，请等 5 分钟，或者先取消关注，再重新关注就可以看到新菜单'
     }
     ctx.body = reply;
-    await next();
     // 获取地理位置，地理位置为事件类型
   } else if (message.MsgType === 'event') {
     let reply = ''
-    if (message.EVENT === 'LOCATION') {
-      reply = `您上报的位置是:${message.Latitude}-${message.Longitude}-${message.Precision}`
+    if (message.Event === 'subscribe') {
+      reply = '欢迎订阅' + '！ '
 
+      if (message.EventKey && message.ticket) {
+        reply += '扫码参数是：' + message.EventKey + '_' + message.ticket
+      } else {
+        reply = help
+      }
+    } else if (message.Event === 'VIEW') {
+      console.log('你点击了菜单链接： ' + message.EventKey + ' ' + message.MenuId)
+    } else if (message.Event === 'scancode_push') {
+      console.log('你扫码了： ' + message.ScanCodeInfo.ScanType + ' ' + message.ScanCodeInfo.ScanResult)
+    } else if (message.Event === 'scancode_waitmsg') {
+      console.log('你扫码了： ' + message.ScanCodeInfo.ScanType + ' ' + message.ScanCodeInfo.ScanResult)
+    } else if (message.Event === 'pic_sysphoto') {
+      console.log('系统拍照： ' + message.SendPicsInfo.count + ' ' + JSON.stringify(message.SendPicsInfo.PicList))
+    } else if (message.Event === 'pic_photo_or_album') {
+      console.log('拍照或者相册： ' + message.SendPicsInfo.count + ' ' + JSON.stringify(message.SendPicsInfo.PicList))
+    } else if (message.Event === 'pic_weixin') {
+      console.log('微信相册发图： ' + message.SendPicsInfo.count + ' ' + JSON.stringify(message.SendPicsInfo.PicList))
+    } else if (message.Event === 'location_select') {
+      console.log('地理位置： ' + JSON.stringify(message.SendLocationInfo))
+    } else if (message.Event === 'unsubscribe') {
+      reply = '无情取消订阅'
+    } else if (message.Event === 'SCAN') {
+      console.log('关注后扫二维码' + '！ 扫码参数' + message.EventKey + '_' + message.ticket)
+    } else if (message.Event === 'LOCATION') {
+      console.log(`您上报的位置是：${message.Latitude}-${message.Longitude}-${message.Precision}`)
     }
     ctx.body = reply;
   }
+  await next();
 }
 
 

@@ -3,6 +3,7 @@ const request = require('request-promise');
 const fs = require('fs');
 const base = 'https://api.weixin.qq.com/cgi-bin/';
 const mpBase = 'https://mp.weixin.qq.com/cgi-bin/';
+const semanticUrl = 'https://api.weixin.qq.com/semantic/semproxy/search?'
 
 const api = {
   accessToken: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential',
@@ -43,9 +44,22 @@ const api = {
     show: mpBase + 'showqrcode?',
   },
 
-  shortUrl:{
-
+  shortUrl: {
+    create: base + 'shorturl?',
   },
+
+  ai: {
+    translate: base + 'media/voice/translatecontent?'
+  },
+  semanticUrl,
+
+  menu: {
+    create: base + 'menu/create?',
+    del: base + 'menu/delete?',
+    custom: base + 'menu/addconditional?',
+    fetch: base + 'menu/get?'
+  },
+
 }
 
 /**
@@ -386,6 +400,55 @@ class WeChat {
     return url;
   }
 
+  // 长连接转短链接
+  createShortUrl(token, action = 'long2short', longurl) {
+    const url = api.shortUrl.create + 'access_token=' + token
+    const body = {
+      action,
+      long_url: longurl
+    }
+
+    return { method: 'POST', url, body }
+  }
+
+  semantic(token, semanticData) {
+    const url = api.semanticUrl + 'access_token=' + token
+    semanticData.appid = this.appID
+
+    return { method: 'POST', url, body: semanticData }
+  }
+
+  // AI 接口
+  aiTranslate(token, body, lfrom, lto) {
+    const url = api.ai.translate + 'access_token=' + token + '&lfrom=' + lfrom + '&lto=' + lto
+    return { method: 'POST', url, body }
+  }
+
+  createMenu(token, menu, rules) {
+    let url = api.menu.create + 'access_token=' + token
+
+    if (rules) {
+      url = api.menu.custom + 'access_token=' + token
+      menu.matchrule = rules
+    }
+
+    return { method: 'POST', url, body: menu }
+  }
+
+
+  // 删除菜单
+  deleteMenu(token) {
+    const url = api.menu.del + 'access_token=' + token
+
+    return { url }
+  }
+
+  // 获取菜单
+  fetchMenu(token) {
+    const url = api.menu.fetch + 'access_token=' + token
+
+    return { url }
+  }
 }
 
 module.exports = WeChat;
