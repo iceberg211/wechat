@@ -6,4 +6,5 @@ module.exports = {
   },
   port: 2333,
   db: 'mongodb://localhost/wechat',
+  baseUrl: 'http://ngrok.frpgz1.idcfengye.com/'
 }
