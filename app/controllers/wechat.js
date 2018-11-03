@@ -26,6 +26,13 @@ exports.oauth = async (ctx, next) => {
 
 }
 
+// skd控制器
+exports.sdk = async (ctx, next) => {
+  await ctx.render('wechat/sdk', {
+    title: 'skd pug测试',
+    desc: '测试skd'
+  })
+}
 
 exports.userinfo = async (ctx, next) => {
   const oauth = getOAuth();
@@ -34,7 +41,6 @@ exports.userinfo = async (ctx, next) => {
 
   const data = await oauth.fetchAccessToken(code);
 
-  console.log(data)
   const userData = await oauth.getUserInfo(data.access_token, data.openid);
 
   ctx.body = userData
