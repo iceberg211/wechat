@@ -1,8 +1,11 @@
 const Koa = require('koa');
-const wechat = require('./wechat-lib/middleware')
+const Router = require('koa-router');
 const config = require('./config/config');
-const reply = require('./wechat/reply');
+const views = require('koa-views');
+const moment = require('moment');
 const { initSchemas, connect } = require('./app/database/init');
+const { resolve } = require('path');
+
 
 
 ; (async () => {
@@ -14,8 +17,20 @@ const { initSchemas, connect } = require('./app/database/init');
 
   const app = new Koa();
 
-  // 使用中间件
-  app.use(wechat(config, reply.reply));
+  app.use(views(resolve(__dirname, 'app/views'), {
+    extension: 'pug',
+    options: {
+      moment: moment
+    }
+  }))
+
+  // 生成路由实例
+  const router = new Router();
+
+  require('./config/routes')(router)
+
+  // 所有的请求会进入到Koa的实例中去，
+  app.use(router.routes()).use(router.allowedMethods())
 
   app.listen(config.port, () => console.log(`listen at 2333`));
 })()

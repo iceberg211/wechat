@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const Wechat = require('../wechat-lib');
 const config = require('../config/config');
+const WechatOAuth = require('./oauth');
 const Token = mongoose.model('Token');
-const Token = mongoose.model('Ticket')
+const Ticket = mongoose.model('Ticket')
 
 const wechatCfg = {
   wechat: {
@@ -20,12 +21,12 @@ const wechatCfg = {
       return res;
     },
     getTicket: async () => {
-      const res = await Token.getTicket()
+      const res = await Ticket.getTicket()
 
       return res;
     },
     saveTicket: async (data) => {
-      const res = await Token.saveTicket(data)
+      const res = await Ticket.saveTicket(data)
 
       return res;
     },
@@ -34,4 +35,4 @@ const wechatCfg = {
 
 
 exports.getWechat = () => new Wechat(wechatCfg.wechat)
-// exports.getOAuth = () => new WechatOAuth(wechatCfg.wechat)
+exports.getOAuth = () => new WechatOAuth(wechatCfg.wechat)
