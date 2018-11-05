@@ -4,10 +4,9 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-// 建模
 const TicketSchema = new Schema({
-  name: String, // accessToken
-  token: String,
+  name: String, // ticket
+  ticket: String,
   expires_in: Number,
   meta: {
     createdAt: {
@@ -21,9 +20,7 @@ const TicketSchema = new Schema({
   }
 })
 
-// 钩子函数中间件
 TicketSchema.pre('save', function (next) {
-  // 如果新增
   if (this.isNew) {
     this.meta.createdAt = this.meta.updatedAt = Date.now()
   } else {
@@ -33,7 +30,6 @@ TicketSchema.pre('save', function (next) {
   next()
 })
 
-// 定义在类模型上的静态方法，不能被实例化
 TicketSchema.statics = {
   async getTicket() {
     const ticket = await this.findOne({
@@ -46,6 +42,7 @@ TicketSchema.statics = {
 
     return ticket
   },
+
   async saveTicket(data) {
     let ticket = await this.findOne({
       name: 'ticket'
@@ -55,15 +52,14 @@ TicketSchema.statics = {
       ticket.ticket = data.ticket
       ticket.expires_in = data.expires_in
     } else {
-      // 创建一条数据
-      ticket = new ticket({
+      ticket = new Ticket({
         name: 'ticket',
         ticket: data.ticket,
         expires_in: data.expires_in
       })
     }
 
-    await ticket.save();
+    await ticket.save()
 
     return data
   }

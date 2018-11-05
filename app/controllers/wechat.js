@@ -1,10 +1,11 @@
 const config = require('../../config/config');
 // const api = require('../api/index')
-const { getOAuth } = require('../../wechat/index');
+const { getOAuth, getWechat } = require('../../wechat/index');
 // 消息中间件
-const wechatMiddle = require('../../wechat-lib/middleware')
+const wechatMiddle = require('../../wechat-lib/middleware');
 // 恢复策略
-const { reply } = require('../../wechat/reply')
+const { reply } = require('../../wechat/reply');
+const api = require('../api/index')
 
 // 针对微信业务的控制器
 exports.hear = async (ctx, next) => {
@@ -28,10 +29,10 @@ exports.oauth = async (ctx, next) => {
 
 // skd控制器
 exports.sdk = async (ctx, next) => {
-  await ctx.render('wechat/sdk', {
-    title: 'skd pug测试',
-    desc: '测试skd'
-  })
+  const url = ctx.href
+  const params = await api.wechat.getSignature(url)
+
+  await ctx.render('wechat/sdk', params)
 }
 
 exports.userinfo = async (ctx, next) => {
@@ -44,4 +45,13 @@ exports.userinfo = async (ctx, next) => {
   const userData = await oauth.getUserInfo(data.access_token, data.openid);
 
   ctx.body = userData
+}
+
+exports.oauth = async (ctx, next) => {
+  const state = ctx.query.id
+  const scope = 'snsapi_userinfo'
+  const target = config.baseUrl + 'userinfo'
+  const url = api.wechat.getAuthorizeURL(scope, target, state)
+
+  ctx.redirect(url)
 }

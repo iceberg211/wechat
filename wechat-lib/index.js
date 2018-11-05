@@ -130,19 +130,45 @@ class WeChat {
 
     return data;
   }
-  isValidToken(data) {
-    if (!data || !data.expiresIn) {
-      return false;
-    }
-    const expiresIn = data.expiresIn;
-    const now = new Date().getTime();
-    // 如果小于，说明token没有失效
-    if (now < expiresIn) {
-      return true;
-    } else {
-      return false;
+
+  async fetchTicket(token) {
+    let data = await this.getTicket()
+
+    if (!this.isValid(data, 'ticket')) {
+      data = await this.updateTicket(token)
     }
 
+    await this.saveTicket(data)
+
+    return data
+  }
+
+  // 获取 token
+  async updateTicket(token) {
+    const url = `${api.ticket.get}access_token=${token}&type=jsapi`
+
+    const data = await this.request({ url })
+    const now = new Date().getTime()
+    const expiresIn = now + (data.expires_in - 20) * 1000
+
+    data.expires_in = expiresIn
+
+    return data
+  }
+
+  isValid(data, name) {
+    if (!data || !data[name].expires_in) {
+      return false
+    }
+
+    const expiresIn = data.expires_in
+    const now = new Date().getTime()
+
+    if (now < expiresIn) {
+      return true
+    } else {
+      return false
+    }
   }
 
   /**
