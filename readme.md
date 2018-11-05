@@ -26,3 +26,10 @@ primary key      primary key                statice（模型调用）
 
 无关联             table join                
 
+
+## 微信网页授权
+
+1. 网页 /a
+2. 二级网页地址 /b?state&&appid&&
+3. 
+

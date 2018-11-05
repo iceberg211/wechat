@@ -60,6 +60,10 @@ const api = {
     fetch: base + 'menu/get?'
   },
 
+  ticket: {
+    get: base + 'ticket/getticket?'
+  }
+
 }
 
 /**
@@ -76,7 +80,8 @@ class WeChat {
     this.appSecret = opts.appSecret;
     this.getAccessToken = opts.getAccessToken;
     this.saveAccessToken = opts.saveAccessToken;
-
+    this.getTicket = opts.getTicket
+    this.saveTicket = opts.saveTicket
     this.fetchAccessToken();
   }
   async request(options) {

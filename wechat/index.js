@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Wechat = require('../wechat-lib');
 const config = require('../config/config');
-const Token = mongoose.model('Token')
+const Token = mongoose.model('Token');
+const Token = mongoose.model('Ticket')
 
 const wechatCfg = {
   wechat: {
@@ -15,6 +16,16 @@ const wechatCfg = {
     },
     saveAccessToken: async (data) => {
       const res = await Token.saveAccessToken(data)
+
+      return res;
+    },
+    getTicket: async () => {
+      const res = await Token.getTicket()
+
+      return res;
+    },
+    saveTicket: async (data) => {
+      const res = await Token.saveTicket(data)
 
       return res;
     },
