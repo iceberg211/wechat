@@ -95,18 +95,16 @@ class WeChat {
     }
   }
 
-  /**
-   *   1. 首先检查数据库里的 token 是否过期
-   *   2. 过期则刷新
-   *   3. token 入库
-   */
+  // 1. 首先检查数据库里的 token 是否过期
+  // 2. 过期则刷新
+  // 3. token 入库
   async fetchAccessToken() {
     // 获取
     let data = await this.getAccessToken();
 
     // 如果token不合法
-    if (!this.isValidToken(data)) {
-      data = await this.updateAccessToken();
+    if (!this.isValid(data, 'access_token')) {
+      data = await this.updateAccessToken()
     }
 
     await this.saveAccessToken(data)
