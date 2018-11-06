@@ -1,12 +1,11 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const config = require('./config/config');
-const views = require('koa-views');
+const bodyParser = require('koa-bodyparser')
+const session = require('koa-session')
 const moment = require('moment');
 const { initSchemas, connect } = require('./app/database/init');
 const { resolve } = require('path');
-
-
 
 ; (async () => {
   // 连接
@@ -17,6 +16,10 @@ const { resolve } = require('path');
   const app = new Koa();
   const router = new Router();
   const views = require('koa-views')
+
+  app.keys = ['iceberg211']
+  app.use(session(app))
+  app.use(bodyParser())
 
   app.use(views(resolve(__dirname, 'app/views'), {
     extension: 'pug',
