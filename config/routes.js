@@ -3,7 +3,7 @@ const User = require('../app/controllers/user');
 const Index = require('../app/controllers/index');
 const Category = require('../app/controllers/category');
 const Movie = require('../app/controllers/movie');
-
+const koaBody = require('koa-body');
 
 module.exports = router => {
 
@@ -37,10 +37,9 @@ module.exports = router => {
   router.get('/admin/category/update/:_id', User.signinRequired, Category.show)
   // router.delete('/admin/category', User.signinRequired, Category.del)
 
-
+  // 电影相关
   router.get('/admin/movie', User.signinRequired, Movie.show)
   router.post('/admin/movie', User.signinRequired, Movie.new)
   router.get('/admin/movie/list', User.signinRequired, Movie.list)
   router.get('/admin/movie/update/:_id', User.signinRequired, Movie.show)
-
 }

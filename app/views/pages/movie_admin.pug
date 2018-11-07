@@ -1,0 +1,88 @@
+extends ../layout
+
+block content
+  .container
+    .row
+      form.form-horizontal(method='post', action='/admin/movie')
+        if movie
+          input(name='_id', type='hidden', value=movie._id)
+        .form-group
+          label.col-md-10.control-label(for="inputDouban") 豆瓣同步
+          .col-md-10
+            input#inputDouban.form-control(name='doubanId', type='text', value=movie ? movie.doubanId : '')
+        .form-group
+          label.col-md-10.control-label(for="inputCategory") 分类选择
+          if categories
+            each cat in categories
+              label.radio-inline
+                if movie.category
+                  input(name='categoryId', type='radio', value=cat._id, checked=cat._id.toString()==movie.category.toString())
+                  | #{cat.name}
+                else
+                  input(name='categoryId', type='radio', value=cat._id)
+                  | #{cat.name}
+        .form-group
+          label.col-md-10.control-label(for="inputCategory") 电影分类
+          .col-md-10
+            input#inputCategory.form-control(name="categoryName", type="text", value=movie.categoryName)
+        .form-group
+          label.col-md-10.control-label(for="inputTitle") 电影名字
+          .col-md-10
+            input#inputTitle.form-control(name="title", type="text", value=movie.title)
+        .form-group
+          label.col-md-10.control-label(for="inputDoctor") 电影导演
+          .col-md-10
+            input#inputDirector.form-control(name="director", type="text", value=movie.director)
+        .form-group
+          label.col-md-10.control-label(for="inputCountry") 国家
+          .col-md-10
+            input#inputCountry.form-control(name="country", type="text", value=movie.country)
+        .form-group
+          label.col-md-10.control-label(for="inputLanguage") 语种
+          .col-md-10
+            input#inputLanguage.form-control(name="language", type="text", value=movie.language)
+        .form-group
+          label.col-md-10.control-label(for="inputPoster") 海报地址
+          .col-md-10
+            input#inputPoster.form-control(name="poster", type="text", value=movie.poster)
+        .form-group
+          label.col-md-10.control-label(for="inputPosterFile") 海报上传
+          .col-md-10
+            input#inputPosterFile.form-control(name="uploadPoster", type="file")
+        .form-group
+          label.col-md-10.control-label(for="inputYear") 上映年代
+          .col-md-10
+            input#inputYear.form-control(name="year", type="text", value=movie.year)
+        .form-group
+          label.col-md-10.control-label(for="inputSummary") 电影简介
+          .col-md-10
+            textarea#inputSummary.form-control(name="summary", type="text")= movie.summary
+        .form-group
+          .col-sm-offset-2.col-md-10
+          button.btn.btn-default(type="submit") 录入
+  script.
+    $(function() {
+      $('#inputDouban').blur(function() {
+        let douban = $(this)
+        let id = douban.val()
+
+        if (id) {
+          $.ajax({
+          type: 'get',
+          url: 'https://api.douban.com/v2/movie/subject/' + id,
+          dataType: 'jsonp',
+          crossDomain: true,
+          cache: true,
+          jsonp: 'callback',
+          success: function (data) {
+            $('#inputTitle').val(data.title)
+            $('#inputDirector').val(data.directors[0].name)
+            $('#inputCountry').val(data.countries[0])
+            $('#inputYear').val(data.year)
+            $('#inputSummary').val(data.summary)
+            $('#inputPoster').val(data.images.large)
+          }
+        })
+        }
+      })
+    })
