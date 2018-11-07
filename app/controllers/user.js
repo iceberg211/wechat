@@ -18,17 +18,14 @@ exports.showSignin = async (ctx, next) => {
 
 // 3. 用户数据的持久化 signup
 exports.signup = async (ctx, next) => {
-
   const {
     email,
     password,
     nickname
-  } = ctx.query.body.user
-  console.log(ctx.query);
+  } = ctx.request.body.user
   let user = User.find({ email });
 
   if (user) return ctx.redirect('signin');
-
 
   user = new User({
     email,
@@ -54,9 +51,9 @@ exports.signin = async (ctx, next) => {
   const {
     email,
     password,
-  } = ctx.query.body.user
+  } = ctx.request.body.user
 
-  const user = User.find({ email });
+  const user = await User.findOne({ email })
   // 如果没登陆
   if (!user) return ctx.redirect('/signup');
 
@@ -80,11 +77,19 @@ exports.signin = async (ctx, next) => {
 // 6. 增加两个 Pug 页面，注册和登录
 // 7. koa-bodyparser
 
-
-
 // 登出
 exports.logout = async (ctx, next) => {
   ctx.session.user = {}
 
   ctx.redirect('/')
+}
+
+
+exports.list = async (ctx, next) => {
+  const users = await User.find({}).sort('meta.createdAt');
+
+  await ctx.render('pages/userList', {
+    title: '用户列表',
+    users
+  })
 }

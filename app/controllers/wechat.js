@@ -7,6 +7,19 @@ const wechatMiddle = require('../../wechat-lib/middleware');
 const { reply } = require('../../wechat/reply');
 const api = require('../api/index')
 
+exports.getSDKSignature = async (ctx, next) => {
+  let url = ctx.query.url
+
+  url = decodeURIComponent(url)
+
+  const params = await api.wechat.getSignature(url)
+
+  ctx.body = {
+    success: true,
+    data: params
+  }
+}
+
 // 针对微信业务的控制器
 exports.hear = async (ctx, next) => {
   const middleWare = wechatMiddle(config, reply);
