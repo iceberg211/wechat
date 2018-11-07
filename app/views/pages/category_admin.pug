@@ -1,0 +1,14 @@
+extends ../layout
+
+block content
+  .container
+    .row
+      form.form-horizontal(method='post', action='/admin/category')
+        input(name='category[_id]', type='hidden', value=category._id)
+        .form-group
+          label.col-sm-10.control-label(for='inputCat') 电影分类
+          .col-sm-10
+            input#inputCat.form-control(name='category[name]', type='text', value=category.name)
+        .form-group
+          .col-sm-offset-2.col-sm-10
+            button.btn.btn-default(type='submit') 录入

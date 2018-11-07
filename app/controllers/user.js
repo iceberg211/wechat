@@ -35,6 +35,7 @@ exports.signup = async (ctx, next) => {
 
   ctx.session.user = {
     _id: user._id,
+    role: user.role,
     nickname: user.nickname,
   }
 
@@ -64,6 +65,7 @@ exports.signin = async (ctx, next) => {
     ctx.session.user = {
       _id: user._id,
       nickname: user.nickname,
+      role: user.role,
     }
     ctx.redirect('/');
   } else {
@@ -92,4 +94,25 @@ exports.list = async (ctx, next) => {
     title: '用户列表',
     users
   })
+}
+
+// 需要登陆的中间件控制
+exports.signinRequired = async (ctx, next) => {
+  const user = ctx.session.user;
+  // 如果user不存在，或者id不存在
+  if (!user || !user._id) {
+    return ctx.redirect('/user/signin');
+  }
+
+  await next();
+}
+
+exports.adminRequired = async (ctx, next) => {
+
+  const user = ctx.session.user;
+
+  if (user.role !== 'admin') {
+    return ctx.redirect('/user/signin');
+  }
+  await next();
 }

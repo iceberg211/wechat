@@ -1,6 +1,7 @@
 const Wechat = require('../app/controllers/wechat');
 const User = require('../app/controllers/user');
 const Index = require('../app/controllers/index');
+const Category = require('../app/controllers/category');
 
 module.exports = router => {
 
@@ -26,6 +27,10 @@ module.exports = router => {
   router.get('/userinfo', Wechat.userinfo);
   router.get('/sdk', Wechat.sdk);
 
-  router.get('/admin/user/list', User.list)
+
+  // router.get('/admin/user/list', User.signinRequired, User.adminRequired, User.list)
+  router.get('/admin/user/list', User.signinRequired, User.list)
+  router.post('/admin/category', User.signinRequired, Category.new)
+  router.get('/admin/category/list', User.signinRequired, Category.list)
 
 }
