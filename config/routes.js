@@ -2,6 +2,8 @@ const Wechat = require('../app/controllers/wechat');
 const User = require('../app/controllers/user');
 const Index = require('../app/controllers/index');
 const Category = require('../app/controllers/category');
+const Movie = require('../app/controllers/movie');
+
 
 module.exports = router => {
 
@@ -28,9 +30,17 @@ module.exports = router => {
   router.get('/sdk', Wechat.sdk);
 
 
-  // router.get('/admin/user/list', User.signinRequired, User.adminRequired, User.list)
-  router.get('/admin/user/list', User.signinRequired, User.list)
+  // router.get('/admin/category', User.signinRequired, User.adminRequired, Category.show)
+  router.get('/admin/category', User.signinRequired, Category.show)
   router.post('/admin/category', User.signinRequired, Category.new)
   router.get('/admin/category/list', User.signinRequired, Category.list)
+  router.get('/admin/category/update/:_id', User.signinRequired, Category.show)
+  // router.delete('/admin/category', User.signinRequired, Category.del)
+
+
+  router.get('/admin/movie', User.signinRequired, Movie.show)
+  router.post('/admin/movie', User.signinRequired, Movie.new)
+  router.get('/admin/movie/list', User.signinRequired, Movie.list)
+  router.get('/admin/movie/update/:_id', User.signinRequired, Movie.show)
 
 }
