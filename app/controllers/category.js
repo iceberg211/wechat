@@ -50,3 +50,18 @@ exports.list = async (ctx, next) => {
     categories,
   });
 }
+
+// 3 .分类的删除
+exports.del = async (ctx, next) => {
+  const id = ctx.query.id
+
+  try {
+    await Category.remove({ _id: id })
+    await Movie.remove({
+      category: id
+    })
+    ctx.body = { success: true }
+  } catch (err) {
+    ctx.body = { success: false }
+  }
+}

@@ -4,16 +4,50 @@ const mongoose = require('mongoose')
 const Movie = mongoose.model('Movie')
 const Category = mongoose.model('Category');
 
+const { resolve } = require('path');
+const { readFile, writeFile } = require('fs');
+const util = require('util')
+const readFileAsync = util.promisify(readFile)
+const writeFileAsync = util.promisify(writeFile)
 
 
 exports.show = async (ctx, next) => {
-  const { _id } = ctx.params;
-  let movie = {}
+  const _id = ctx.params._id
+  const movie = await api.movie.findMovieById(_id)
 
-  await ctx.render('pages/movie_admin', {
-    title: '后台分类录入页面',
-    movie
+  // await Movie.update({ _id }, { $inc: { pv: 1 } })
+
+  // const comments = await Comment.find({
+  //   movie: _id
+  // })
+  //   .populate('from', '_id nickname')
+  //   .populate('replies.from replies.to', '_id nickname')
+
+  await ctx.render('pages/detail', {
+    title: '电影详情页面',
+    movie,
+    // comments
   })
+}
+
+exports.savePoster = async (ctx, next) => {
+  const posterData = ctx.request.body.files.uploadPoster
+  const filePath = posterData.path
+  const fileName = posterData.name
+
+  if (fileName) {
+    const data = await readFileAsync(filePath)
+    const timestamp = Date.now()
+    const type = posterData.type.split('/')[1]
+    const poster = timestamp + '.' + type
+    const newPath = resolve(__dirname, '../../../../../', 'public/upload/' + poster)
+
+    await writeFileAsync(newPath, data)
+
+    ctx.poster = poster
+  }
+
+  await next()
 }
 
 // 2. 电影分类的创建持久化
@@ -23,14 +57,13 @@ exports.new = async (ctx, next) => {
 
 
   if (movieData._id) {
-    movie = await api.movie.findMovieById(movieData._id)
+    movie = await Movie.findOne({ _id: movieData._id })
   }
 
   const { categoryId, categoryName } = movieData;
 
   let category
 
-  console.log(ctx.request);
   // 如果存在集合
   if (categoryId) {
 

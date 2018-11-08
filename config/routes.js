@@ -3,6 +3,8 @@ const User = require('../app/controllers/user');
 const Index = require('../app/controllers/index');
 const Category = require('../app/controllers/category');
 const Movie = require('../app/controllers/movie');
+
+// 支持处理文件上传
 const koaBody = require('koa-body');
 
 module.exports = router => {
@@ -35,7 +37,7 @@ module.exports = router => {
   router.post('/admin/category', User.signinRequired, Category.new)
   router.get('/admin/category/list', User.signinRequired, Category.list)
   router.get('/admin/category/update/:_id', User.signinRequired, Category.show)
-  // router.delete('/admin/category', User.signinRequired, Category.del)
+  router.delete('/admin/category', User.signinRequired, Category.del)
 
   // 电影相关
   router.get('/admin/movie', User.signinRequired, Movie.show)
