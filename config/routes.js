@@ -18,6 +18,8 @@ module.exports = router => {
   router.post('/user/signin', User.signin)
   router.get('/logout', User.logout)
 
+  router.get('/admin/:id', User.signinRequired, Movie.details);
+
   // 进入微信消息中间件 ，通过Wechat  controllers转发
   router.get('/wx-hear', Wechat.hear);
   router.post('/wx-hear', Wechat.hear);
@@ -40,8 +42,8 @@ module.exports = router => {
   router.delete('/admin/category', User.signinRequired, Category.del)
 
   // 电影相关
-  router.get('/admin/movie', User.signinRequired, Movie.show)
   router.post('/admin/movie', User.signinRequired, Movie.new)
+  router.get('/admin/movie', User.signinRequired, Movie.show);
   router.get('/admin/movie/list', User.signinRequired, Movie.list)
   router.get('/admin/movie/update/:_id', User.signinRequired, Movie.show)
 }

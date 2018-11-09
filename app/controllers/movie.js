@@ -11,22 +11,25 @@ const readFileAsync = util.promisify(readFile)
 const writeFileAsync = util.promisify(writeFile)
 
 
-exports.show = async (ctx, next) => {
-  const _id = ctx.params._id
-  const movie = await api.movie.findMovieById(_id)
+exports.details = async (ctx, next) => {
+  const _id = ctx.params._id;
+  const movie = await Movie.findOne({ _id });
 
-  // await Movie.update({ _id }, { $inc: { pv: 1 } })
-
-  // const comments = await Comment.find({
-  //   movie: _id
-  // })
-  //   .populate('from', '_id nickname')
-  //   .populate('replies.from replies.to', '_id nickname')
+  // 更新
+  await Movie.update({ _id }, { $inc: { pv: 1 } });
 
   await ctx.render('pages/detail', {
     title: '电影详情页面',
     movie,
-    // comments
+  })
+}
+
+exports.show = async (ctx, next) => {
+  const _id = ctx.params._id
+  const movie = {}
+  await ctx.render('pages/movie_admin', {
+    title: '电影详情页面',
+    movie,
   })
 }
 
@@ -55,11 +58,9 @@ exports.new = async (ctx, next) => {
   let movieData = ctx.request.body || {}
   let movie
 
-
   if (movieData._id) {
     movie = await Movie.findOne({ _id: movieData._id })
   }
-
   const { categoryId, categoryName } = movieData;
 
   let category
@@ -70,8 +71,9 @@ exports.new = async (ctx, next) => {
     category = await Category.findOne({ _id: categoryId });
     // 如果存在集合名字
   } else if (categoryName) {
-    category = new Category({ name: categoryName });
-    await category.save();
+    category = new Category({ name: categoryName })
+    console.log(category);
+    await category.save()
   }
 
   if (movie) {
@@ -89,6 +91,7 @@ exports.new = async (ctx, next) => {
   if (category) {
     category.movies = category.movies || [];
     category.movies.push(movie.id);
+    await category.save();
   }
 
   await movie.save()
@@ -100,6 +103,7 @@ exports.new = async (ctx, next) => {
 // 2. 电影分类的创建持久化
 exports.list = async (ctx, next) => {
   const movies = await Movie.find({}).sort('meta.createdAt');
+  console.log(movies);
   await ctx.render('pages/movie_list', {
     title: '分类的列表页面',
     movies,
