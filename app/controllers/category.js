@@ -2,15 +2,15 @@
 // 1. 电影分类的录入页面
 const mongoose = require('mongoose')
 const Category = mongoose.model('Category')
-
+const api = require('../api')
 
 exports.show = async (ctx, next) => {
   const { _id } = ctx.params;
   let category = {}
 
-  // if (_id) {
-  //   category = await api.movie.findCategoryById(_id)
-  // }
+  if (_id) {
+    category = await api.movie.findCategoryById(_id)
+  }
 
   await ctx.render('pages/category_admin', {
     title: '后台分类录入页面',
@@ -26,7 +26,7 @@ exports.new = async (ctx, next) => {
   let category;
   // 先去查找
   if (_id) {
-    category = await Category.findOne({ _id });
+    category = await api.movie.findCategoryById(_id)
   }
   // 如果存在，则保存
   if (category) {
@@ -44,7 +44,7 @@ exports.new = async (ctx, next) => {
 
 // 2. 电影分类的创建持久化
 exports.list = async (ctx, next) => {
-  const categories = await Category.find({}).sort('meta.createdAt');
+  const categories = await api.movie.findCategories()
   await ctx.render('pages/category_list', {
     title: '分类的列表页面',
     categories,
@@ -54,7 +54,7 @@ exports.list = async (ctx, next) => {
 // 3 .分类的删除
 exports.del = async (ctx, next) => {
   const id = ctx.query.id
-
+  // 删除一个分类的时候应该删除所有的分类
   try {
     await Category.remove({ _id: id })
     await Movie.remove({

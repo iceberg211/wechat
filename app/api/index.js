@@ -1,4 +1,4 @@
 module.exports = {
   wechat: require('./wechat'),
-  // movie: require('./movie')
+  movie: require('./movie')
 }

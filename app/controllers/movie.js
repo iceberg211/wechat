@@ -9,11 +9,13 @@ const { readFile, writeFile } = require('fs');
 const util = require('util')
 const readFileAsync = util.promisify(readFile)
 const writeFileAsync = util.promisify(writeFile)
+const api = require('../api');
+
 
 
 exports.details = async (ctx, next) => {
   const _id = ctx.params._id;
-  const movie = await Movie.findOne({ _id });
+  const movie = await api.movie.findMovieById(_id);
 
   // 更新
   await Movie.update({ _id }, { $inc: { pv: 1 } });
@@ -25,13 +27,22 @@ exports.details = async (ctx, next) => {
 }
 
 exports.show = async (ctx, next) => {
-  const _id = ctx.params._id
-  const movie = {}
+  const { _id } = ctx.params
+  let movie = {}
+
+  if (_id) {
+    movie = await api.movie.findMovieById(_id)
+  }
+  let categories = await api.movie.findCategories();
+  console.log(movie, categories);
+
   await ctx.render('pages/movie_admin', {
-    title: '电影详情页面',
+    title: '后台分类录入页面',
     movie,
+    categories
   })
 }
+
 
 exports.savePoster = async (ctx, next) => {
   const posterData = ctx.request.body.files.uploadPoster
@@ -59,7 +70,7 @@ exports.new = async (ctx, next) => {
   let movie
 
   if (movieData._id) {
-    movie = await Movie.findOne({ _id: movieData._id })
+    movie = await api.movie.findMovieById(movieData._id)
   }
   const { categoryId, categoryName } = movieData;
 
@@ -68,7 +79,7 @@ exports.new = async (ctx, next) => {
   // 如果存在集合
   if (categoryId) {
 
-    category = await Category.findOne({ _id: categoryId });
+    category = await api.movie.findCategoryById(categoryId)
     // 如果存在集合名字
   } else if (categoryName) {
     category = new Category({ name: categoryName })
@@ -86,7 +97,7 @@ exports.new = async (ctx, next) => {
     movie = new Movie(movieData);
   }
 
-  category = await Category.findOne({ _id: category.id });
+  category = await api.movie.findCategoryById(category._id)
 
   if (category) {
     category.movies = category.movies || [];
@@ -111,26 +122,60 @@ exports.list = async (ctx, next) => {
 }
 
 
-// 3. 删除电影数据
+// 3. 删除电影数据,删除分类的时候，会删除所有的分类，删除一部电影的时候，应该删除分类中的数据
 exports.del = async (ctx, next) => {
+
   const id = ctx.query.id;
-  let movie;
 
-  // if (id) {
-  //   movie = await Movie.findOne({ _id: id });
-  // }
+  const cat = await Category.findOne({ movies: { $in: [id] } })  // 查询集合中的电影字段数据
 
-  // // 如果没有找到话
-  // if (!movie) {
-  //   return (ctx.body = {
-  //     success: false,
-  //   })
-  // }
+  if (cat && cat.movies.length) {
+    const index = cat.movies.indexOf(id);
+    cat.movies.splice(index, 1);
+    await cat.svae();
+  }
 
   try {
     await Movie.remove({ _id: id })
     ctx.body = { success: true }
   } catch (err) {
     ctx.body = { success: false }
+  }
+}
+
+// 电影搜索功能
+exports.search = async (ctx, next) => {
+  const { cat, q, p } = ctx.query
+  const page = parseInt(p, 10) || 0;
+  const count = 2;
+  const index = page * count;
+
+  if (catId) {
+    // 找到合计
+    const categories = await api.movie.searchByCategroy(cat)
+    const category = categories[0];
+    let movies = category.movies || []
+    let results = movies.slice(index, index + count)
+
+    await ctx.render('pages/results', {
+      title: '分类搜索结果页面',
+      keyword: category.name,
+      currentPage: (page + 1),
+      query: 'cat=' + cat,
+      totalPage: Math.ceil(movies.length / count),
+      movies: results,
+    })
+    // 全局的搜索
+  } else {
+    let movies = await api.movie.searchByKeyword(q)
+    let results = movies.slice(index, index + count)
+    await ctx.render('pages/results', {
+      title: '关键词搜索结果页面',
+      keyword: q,
+      currentPage: (page + 1),
+      query: 'q=' + q,
+      totalPage: Math.ceil(movies.length / count),
+      movies: results,
+    })
   }
 }
