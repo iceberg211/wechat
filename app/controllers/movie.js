@@ -3,6 +3,7 @@
 const mongoose = require('mongoose')
 const Movie = mongoose.model('Movie')
 const Category = mongoose.model('Category');
+const Comment = mongoose.model('Comment');
 
 const { resolve } = require('path');
 const { readFile, writeFile } = require('fs');
@@ -17,12 +18,19 @@ exports.details = async (ctx, next) => {
   const _id = ctx.params._id;
   const movie = await api.movie.findMovieById(_id);
 
-  // 更新
+  // 更新Pv
   await Movie.update({ _id }, { $inc: { pv: 1 } });
+
+  const comments = await Comment.find({
+    movie: _id
+  })
+    .populate('from', '_id nickname')
+    .populate('replies.from replies.to', '_id nickname')
 
   await ctx.render('pages/detail', {
     title: '电影详情页面',
     movie,
+    comments
   })
 }
 

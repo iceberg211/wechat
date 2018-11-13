@@ -46,4 +46,7 @@ module.exports = router => {
   router.get('/admin/movie', User.signinRequired, Movie.show);
   router.get('/admin/movie/list', User.signinRequired, Movie.list)
   router.get('/admin/movie/update/:_id', User.signinRequired, Movie.show)
+
+  // 评论
+  router.post('/comment', User.signinRequired, Comment.save)
 }
