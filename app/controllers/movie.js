@@ -42,8 +42,6 @@ exports.show = async (ctx, next) => {
     movie = await api.movie.findMovieById(_id)
   }
   let categories = await api.movie.findCategories();
-  console.log(movie, categories);
-
   await ctx.render('pages/movie_admin', {
     title: '后台分类录入页面',
     movie,

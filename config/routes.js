@@ -3,6 +3,7 @@ const User = require('../app/controllers/user');
 const Index = require('../app/controllers/index');
 const Category = require('../app/controllers/category');
 const Movie = require('../app/controllers/movie');
+const Comment = require('../app/controllers/Comment');
 
 // 支持处理文件上传
 const koaBody = require('koa-body');
@@ -11,14 +12,16 @@ module.exports = router => {
 
   router.get('/', Index.homePage)
 
+
+  router.get('/results', Movie.search)
+  // router.post('/comment', User.signinRequired, Comment.save)
+
   // 用户的注册登录路由
   router.get('/user/signup', User.showSignup)
   router.get('/user/signin', User.showSignin)
   router.post('/user/signup', User.signup)
   router.post('/user/signin', User.signin)
   router.get('/logout', User.logout)
-
-  router.get('/admin/:id', User.signinRequired, Movie.details);
 
   // 进入微信消息中间件 ，通过Wechat  controllers转发
   router.get('/wx-hear', Wechat.hear);
@@ -33,6 +36,8 @@ module.exports = router => {
   router.get('/userinfo', Wechat.userinfo);
   router.get('/sdk', Wechat.sdk);
 
+  router.get('/admin/user/list', User.signinRequired, User.list)
+  router.delete('/admin/user', User.signinRequired, User.del)
 
   // router.get('/admin/category', User.signinRequired, User.adminRequired, Category.show)
   router.get('/admin/category', User.signinRequired, Category.show)
@@ -46,7 +51,8 @@ module.exports = router => {
   router.get('/admin/movie', User.signinRequired, Movie.show);
   router.get('/admin/movie/list', User.signinRequired, Movie.list)
   router.get('/admin/movie/update/:_id', User.signinRequired, Movie.show)
-
+  router.delete('/admin/movie', User.signinRequired, Movie.del)
   // 评论
   router.post('/comment', User.signinRequired, Comment.save)
+  router.get('/admin/:id', User.signinRequired, Movie.details);
 }

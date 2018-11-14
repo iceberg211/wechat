@@ -3,7 +3,7 @@ extends ../layout
 block content
   .container
     .row
-      form.form-horizontal(method='post', action='/admin/movie')
+      form.form-horizontal(method='post', action='/admin/movie', enctype="multipart/form-data")
         if movie
           input(name='_id', type='hidden', value=movie._id)
         .form-group
