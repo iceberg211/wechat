@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const Movie = mongoose.model('Movie')
 const Category = mongoose.model('Category');
 const Comment = mongoose.model('Comment');
+const _ = require('lodash');
 
 const { resolve } = require('path');
 const { readFile, writeFile } = require('fs');
@@ -70,9 +71,9 @@ exports.savePoster = async (ctx, next) => {
   await next()
 }
 
-// 2. 电影分类的创建持久化
+// 2. 电影分类的创建持久化,如何建立分类与电影列表的集合关系
 exports.new = async (ctx, next) => {
-  let movieData = ctx.request.body || {}
+  let movieData = ctx.request.body.fields || {}
   let movie
 
   if (movieData._id) {
@@ -82,14 +83,12 @@ exports.new = async (ctx, next) => {
 
   let category
 
-  // 如果存在集合
+  // 如果id集合存在
   if (categoryId) {
-
     category = await api.movie.findCategoryById(categoryId)
-    // 如果存在集合名字
+    // 没有传递id
   } else if (categoryName) {
     category = new Category({ name: categoryName })
-    console.log(category);
     await category.save()
   }
 
@@ -105,9 +104,10 @@ exports.new = async (ctx, next) => {
 
   category = await api.movie.findCategoryById(category._id)
 
+  // 建立起集合的对应关系
   if (category) {
     category.movies = category.movies || [];
-    category.movies.push(movie.id);
+    category.movies.push(movie._id);
     await category.save();
   }
 
@@ -119,13 +119,13 @@ exports.new = async (ctx, next) => {
 
 // 2. 电影分类的创建持久化
 exports.list = async (ctx, next) => {
-  const movies = await Movie.find({}).sort('meta.createdAt');
-  console.log(movies);
+  const movies = await api.movie.findMoviesAndCategory('name')
   await ctx.render('pages/movie_list', {
     title: '分类的列表页面',
-    movies,
-  });
+    movies
+  })
 }
+
 
 
 // 3. 删除电影数据,删除分类的时候，会删除所有的分类，删除一部电影的时候，应该删除分类中的数据

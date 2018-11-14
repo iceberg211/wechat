@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
 
-
+// 电影分类，需要注意movies字段下是一个数组，指向movies条目
 const CategorySchema = new Schema({
   name: {
     unique: true,

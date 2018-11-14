@@ -51,3 +51,12 @@ exports.findCategories = async (id) => {
 
   return data
 }
+
+
+
+exports.findMoviesAndCategory = async (fields) => {
+  const data = await Movie.find({
+  }).populate('category', fields)
+
+  return data
+}

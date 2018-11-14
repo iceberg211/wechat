@@ -47,8 +47,8 @@ module.exports = router => {
   router.delete('/admin/category', User.signinRequired, Category.del)
 
   // 电影相关
-  router.post('/admin/movie', User.signinRequired, Movie.new)
   router.get('/admin/movie', User.signinRequired, Movie.show);
+  router.post('/admin/movie', User.signinRequired, koaBody({ multipart: true }), Movie.new)
   router.get('/admin/movie/list', User.signinRequired, Movie.list)
   router.get('/admin/movie/update/:_id', User.signinRequired, Movie.show)
   router.delete('/admin/movie', User.signinRequired, Movie.del)
