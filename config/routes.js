@@ -54,5 +54,6 @@ module.exports = router => {
   router.delete('/admin/movie', User.signinRequired, Movie.del)
   // 评论
   router.post('/comment', User.signinRequired, Comment.save)
-  router.get('/admin/:id', User.signinRequired, Movie.details);
+  router.get('/movie/:id', Movie.details);
+  // router.get('/movie/:_id', Movie.detail)
 }

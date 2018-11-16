@@ -16,9 +16,11 @@ const api = require('../api');
 
 
 exports.details = async (ctx, next) => {
-  const _id = ctx.params._id;
-  const movie = await api.movie.findMovieById(_id);
+  const _id = ctx.params.id;
+  // console.log(ctx.params);
+  const movie = await api.movie.findMovieById(_id)
 
+  await Movie.update({ _id }, { $inc: { pv: 1 } })
   // 更新Pv
   await Movie.update({ _id }, { $inc: { pv: 1 } });
 
@@ -138,7 +140,7 @@ exports.del = async (ctx, next) => {
   if (cat && cat.movies.length) {
     const index = cat.movies.indexOf(id);
     cat.movies.splice(index, 1);
-    await cat.svae();
+    await cat.save();
   }
 
   try {
@@ -156,7 +158,7 @@ exports.search = async (ctx, next) => {
   const count = 2;
   const index = page * count;
 
-  if (catId) {
+  if (cat) {
     // 找到合计
     const categories = await api.movie.searchByCategroy(cat)
     const category = categories[0];
