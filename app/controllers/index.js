@@ -9,7 +9,6 @@ exports.homePage = async (ctx, next) => {
     options: { limit: 8 }
   })
 
-  console.log(categories);
   await ctx.render('pages/index', {
     title: '首页',
     categories

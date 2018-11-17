@@ -23,9 +23,8 @@ exports.signup = async (ctx, next) => {
     password,
     nickname
   } = ctx.request.body.user
-  let user = User.find({ email });
-
-  if (user) return ctx.redirect('signin');
+  let user = await User.findOne({ email })
+  if (user) return ctx.redirect('/user/signin')
 
   user = new User({
     email,
@@ -42,8 +41,6 @@ exports.signup = async (ctx, next) => {
   user = await user.save();
 
   ctx.redirect('/');
-
-  await ctx.render('');
 }
 
 // 4. 增加一个登录的校验/判断 signin
@@ -56,7 +53,7 @@ exports.signin = async (ctx, next) => {
 
   const user = await User.findOne({ email })
   // 如果没登陆
-  if (!user) return ctx.redirect('/signup');
+  if (!user) return ctx.redirect('/user/signup')
 
   // 检查密码
   const isMatch = await user.comparePassword(password, user.password);
@@ -69,7 +66,7 @@ exports.signin = async (ctx, next) => {
     }
     ctx.redirect('/');
   } else {
-    ctx.redirect('/signup');
+    ctx.redirect('/user/signin')
   }
 }
 
