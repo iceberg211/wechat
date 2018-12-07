@@ -3,7 +3,7 @@ const User = require('../app/controllers/user');
 const Index = require('../app/controllers/index');
 const Category = require('../app/controllers/category');
 const Movie = require('../app/controllers/movie');
-const Comment = require('../app/controllers/Comment');
+const Comment = require('../app/controllers/comment');
 
 // 支持处理文件上传
 const koaBody = require('koa-body');

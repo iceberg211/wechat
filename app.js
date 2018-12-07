@@ -26,6 +26,12 @@ const serve = require('koa-static');
   app.use(bodyParser());
   app.use(serve(resolve(__dirname, '../public')))
 
+  // 前置微信状态检查
+  const wechatController = require('./app/controllers/wechat')
+  app.use(wechatController.checkWechat)
+  app.use(wechatController.wechatRedirect)
+
+
   app.use(async (ctx, next) => {
     const User = mongoose.model('User')
     let user = ctx.session.user

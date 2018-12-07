@@ -29,7 +29,8 @@ primary key      primary key                statice（模型调用）
 
 ## 微信网页授权
 
-1. 网页 /a
-2. 二级网页地址 /b?state&&appid&&
-3. 
+  实现微信账号体系的无缝登陆
 
+  思路：如果来自微信，是否get请求。拿到用户资料，更新Access
+
+## 网页授权code
